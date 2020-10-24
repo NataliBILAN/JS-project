@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600&display=swap"
+      rel="stylesheet">
+    <title>Lectrum</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="left" id="companies">
+        <h1 class="left__title">
+          Доступные платежи
+        </h1>
+        <div class="left__company" data-id="taxes">
+          <img src="img/taxes.svg" class="taxes" data-id="taxes" />
+          <p class="left__company-desc" data-id="taxes">Налоги</p>
+        </div>
+        <div class="left__company" data-id="water">
+          <img src="img/water.svg" class="taxes" data-id="water" />
+          <p class="left__company-desc" data-id="water">Холодная вода</p>
+        </div>
+        <div class="left__company" data-id="internet">
+          <img src="img/internet.svg" class="taxes" data-id="internet"/>
+          <p class="left__company-desc" data-id="internet">Интернет</p>
+        </div>
+        <div class="left__company" data-id="security">
+          <img src="img/security.svg" class="taxes" data-id="security" />
+          <p class="left__company-desc" data-id="security" >Охрана</p>
+        </div>
+        <div class="left__company" data-id="exchange">
+          <img src="img/exchange.svg" class="taxes" data-id="exchange" />
+          <p class="left__company-desc" data-id="exchange" >Обмен валют</p>
+        </div>
+      </div>
+      <div class="center">
+        <h2 class="center__title">Холодная вода</h2>
+        <p class="center__desc">Оплата холодного водоснабжения</p>
+        <p class="center__select-meters">
+          <label for="meters">
+            <span>Выберите счётчик</span>
+            <select id="meters">
+              <option value="DS949321">ДС 949321</option>
+              <option value="QA522010">КА 522010</option>
+              <option value="LK309123">ЛК 309123</option>
+              <option value="LK309123">ДЛ 309123</option>
+              <option value="GC123309">ВС 123309</option>
+              <option value="WE331209">ПЕ 331209</option>
+            </select>
+          </label>
+        </p>
+        <form class="center__form">
+          <div class="form__data">
+            <div class="data__wrapper">
+              <div class="data__item data__previous">
+                <label for="previous">
+                  <span>Предыдущие показания</span>
+                  <input id="previous" name="previous" type="text" autocomplete="off"
+                    pattern="[0-9]{0,12}" />
+                </label>
+              </div>
+              <div class="data__item data__current">
+                <label for="current">
+                  <span>Текущие показания</span>
+                  <input id="current" name="current" type="text" autocomplete="off"
+                    pattern="[0-9]{0,12}" />
+                </label>
+              </div>
+              <div class="data__item data__payment">
+                <label for="payment">
+                  <span>Показания на текущую дату</span>
+                  <input id="payment" name="payment" type="text" autocomplete="off"
+                    pattern="[0-9]{0,12}" />
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form__summary">
+            <p class="form__summary-title">К оплате</p>
+            <ul class="form__summary-list">
+              <li class="list__item">
+                <p><span class="list__item-label">ДС 949321</span>
+                  <span class="price">$ <b>621</b></span>
+                </p>
+              </li>
+              <li class="list__item">
+                <p><span class="list__item-label">КА 522010</span>
+                  <span class="price">$ <b>902</b></span>
+                </p>
+              </li>
+              <li class="list__item">
+                <p><span class="list__item-label">ЛК 309123</span>
+                  <span class="price">$ <b>173</b></span>
+                </p>
+              </li>
+              <li class="list__item list__total">
+                <p><span class="list__item-label">Всего</span>
+                  <span class="price">$ <b>1 696</b></span>
+                </p>
+              </li>
+            </ul>
+          </div>
+          <div class="form__footer">
+            <div class="button-wrapper">
+              <button class="btn-outline" type="reset">Очистить</button>
+              <button class="btn" type="submit">Сохранить</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="right">
+        <h2 class="right__title">Сохранённые платежи</h2>
+        <form class="right__payments">
+          <div class="right__payments-fields">
+            <p class="right__payments-field">
+              <label>
+                <input type="checkbox" checked/>
+                <span>Налоги</span>
+              </label>
+            </p>
+            <p class="right__payments-field">
+              <label>
+                <input type="checkbox" />
+                <span>Холодная вода</span>
+              </label>
+            </p>
+            <p class="right__payments-field">
+              <label>
+                <input type="checkbox" />
+                <span>Интернет</span>
+              </label>
+            </p>
+            <p class="right__payments-field">
+              <label>
+                <input type="checkbox" checked/>
+                <span>Охрана</span>
+              </label>
+            </p>
+            <p class="right__payments-field">
+              <label>
+                <input type="checkbox" />
+                <span>Обмен валют</span>
+              </label>
+            </p>
+          </div>
+          <div class="right__payments-footer">
+            <button class="btn" type="submit">Оплатить</button>
+          </div>
+        </form>
+        <div class="right__transactions">
+          <p class="transactions__title">Транзакции</p>
+          <ul class="transactions__list">
+            <li class="list__item">Налоги: успешно оплачено</li>
+            <li class="list__item list__item-error">Охрана: ошибка транзакции</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
