@@ -40,7 +40,8 @@
         <p class="center__select-meters">
           <label for="meters">
             <span>Выберите счётчик</span>
-            <select id="meters">
+            <select id="meters" required>
+              <option value="" selected disabled hidden>Choose here</option>
               <option value="DS949321">ДС 949321</option>
               <option value="QA522010">КА 522010</option>
               <option value="LK309123">ЛК 309123</option>
@@ -79,7 +80,7 @@
           <div class="form__summary">
             <p class="form__summary-title">К оплате</p>
             <ul class="form__summary-list">
-              <li class="list__item">
+              <!-- <li class="list__item">
                 <p><span class="list__item-label">ДС 949321</span>
                   <span class="price">$ <b>621</b></span>
                 </p>
@@ -93,18 +94,18 @@
                 <p><span class="list__item-label">ЛК 309123</span>
                   <span class="price">$ <b>173</b></span>
                 </p>
-              </li>
+              </li> -->
               <li class="list__item list__total">
                 <p><span class="list__item-label">Всего</span>
-                  <span class="price">$ <b>1 696</b></span>
+                  <span class="total-price">$ <span id="total"></span></span>
                 </p>
               </li>
             </ul>
           </div>
           <div class="form__footer">
             <div class="button-wrapper">
-              <button class="btn-outline" type="reset">Очистить</button>
-              <button class="btn" type="submit">Сохранить</button>
+              <button class="btn-outline" type="reset" id="reset-btn">Очистить</button>
+              <button class="btn" type="submit" id="save-btn">Сохранить</button>
             </div>
           </div>
         </form>
@@ -113,7 +114,8 @@
         <h2 class="right__title">Сохранённые платежи</h2>
         <form class="right__payments">
           <div class="right__payments-fields">
-            <p class="right__payments-field">
+
+            <!-- <p class="right__payments-field">
               <label>
                 <input type="checkbox" checked/>
                 <span>Налоги</span>
@@ -142,17 +144,17 @@
                 <input type="checkbox" />
                 <span>Обмен валют</span>
               </label>
-            </p>
+            </p> -->
           </div>
           <div class="right__payments-footer">
-            <button class="btn" type="submit">Оплатить</button>
+            <button class="btn" id="pay-btn" type="submit">Оплатить</button>
           </div>
         </form>
         <div class="right__transactions">
           <p class="transactions__title">Транзакции</p>
           <ul class="transactions__list">
-            <li class="list__item">Налоги: успешно оплачено</li>
-            <li class="list__item list__item-error">Охрана: ошибка транзакции</li>
+            <!-- <li class="list__item">Налоги: успешно оплачено</li>
+            <li class="list__item list__item-error">Охрана: ошибка транзакции</li> -->
           </ul>
         </div>
       </div>
