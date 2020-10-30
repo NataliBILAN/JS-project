@@ -22,6 +22,19 @@ const transactionsList = document.querySelector('.transactions__list');
 const data = JSON.parse(localStorage.getItem('items'));
 console.log(data);
 
+if(data) {
+    const summary = data.map(item => {
+        return `<li class="list__item">
+        <p><span class="list__item-label">${item.meterId}</span>
+        <span class="price">$ <b>${item.total}</b></span>
+        </p>
+      </li>`;
+    });
+    
+    forPaymentList.insertAdjacentHTML('afterbegin', summary);
+}
+
+
 const availablePayments = {
     taxes: 'Налоги',
     water: 'Холодная вода',
@@ -69,18 +82,21 @@ paymentValue.oninput = (e) => {
 
 };
 
-const getCost = () => {
+const getCost = () => { 
     const {current, previous, id} = payment;
-    const result = (current - previous)*tarifs[`${id}`];
-    payment.total = result;
+    const result = ((current*100) - (previous*100))*tarifs[`${id}`];
+    const paymentTotal = result/100;
+    payment.total = paymentTotal;
 };
 
 const createForPaymentInfo = () => {
+    getCost();
     const item = `<li class="list__item">
-                    <p><span class="list__item-label">${payment.meterId}</span>
-                    <span class="price">$ <b>${payment.total}</b></span>
-                    </p>
+                   <p><span class="list__item-label">${payment.meterId}</span>
+                   <span class="price">$ <b>${payment.total}</b></span>
+                   </p>
                   </li>`;
+     
 
 forPaymentList.insertAdjacentHTML('afterbegin', item);
 };
@@ -88,23 +104,26 @@ forPaymentList.insertAdjacentHTML('afterbegin', item);
 const createTotalInfo = () => {
     const newTotalEl = document.createElement('span');
     newTotalEl.setAttribute("id", "new-total");
-    const totalValue = payments.reduce((sum,current) => {
-        return sum + current.total;}, 0);
-    const newTotalValue = Number(totalValue.toFixed(2));
-    console.log(newTotalValue);
-    newTotalEl.innerHTML = `${newTotalValue}`;
+    let totalValue;
+    if(data) {
+        totalValue = data.reduce((sum,current) => {
+            return sum + current.total;}, 0);
+    }
+    
+    console.log('totalValue', totalValue);
+    newTotalEl.innerHTML = `${totalValue}`;
 
     const newTotal = document.getElementById('new-total');
     const total = document.getElementById('total');
+    //total.innerHTML = `${payment.total}`;
 
     
-
-    if(payments.length <= 1) {
+    if(data && total) {
         totalPriceInfo.replaceChild(newTotalEl, total);
-    } 
-
+    }
+  
     if(total) {
-        total.innerHTML = `${payment.total}`;
+        total.innerHTML = `${payment.total}`;        
     } 
 
     if(newTotal) {
@@ -132,19 +151,6 @@ const createSavedPayments = () => {
 };
 
 const createTransaction = (payedService) => {
-    // let currentService;
-    // for(const key in availablePayments) {
-    //     if (key == payment.id) {
-    //         currentService = availablePayments[key];
-    //     }
-    // }
-//     const inputs = paymentsList.querySelectorAll("input[type='checkbox']");
-//   let payedService;
-//     inputs.forEach(item => {
-//         if(item.checked === true) {
-//             const payedService = item.nextElementSibling.innerHTML;
-//         }   
-//     });
     const transactionsItem = `<li class="list__item">${payedService} успешно оплачено</li>`;
 
     transactionsList.insertAdjacentHTML("afterbegin", transactionsItem);
@@ -152,16 +158,21 @@ const createTransaction = (payedService) => {
 
 saveButton.onclick = (e) => {
     e.preventDefault();
-    getCost();
-    payments.push(payment);
+    
+    if(meters.value === '') {
+        meters.classList.add('error');
+        return false;
+    }
+    meters.classList.remove('error');    
+    
     createForPaymentInfo();
     createTotalInfo();
     createSavedPayments();
-    localStorage.setItem('items', JSON.stringify(payments));
-    console.log(JSON.stringify(payments));
 
-    console.log(payments);
-    console.log('payment', payment.id);
+    //LocalStorage
+    payments.push(payment);
+    localStorage.setItem('items', JSON.stringify(payments));    
+    
     payment = {
         id: '',
         meterId: '',
@@ -175,31 +186,35 @@ saveButton.onclick = (e) => {
     currentValue.value = '';
     paymentValue.value = '';
 
+    meters.value = '';
+    console.log(meters.value);
+
     allCompanies.forEach(item => {item.classList.remove('active');});
+
+    console.log('data', data);
+    console.log('payments', payments);
 };
 
 const pay = () => {
     const inputs = paymentsList.querySelectorAll("input[type='checkbox']");
-  let payedService;
+    let payedService;
     inputs.forEach(item => {
         if(item.checked === true) {
             payedService = item.nextElementSibling.innerHTML;
             console.log(`${payedService} оплачено`);
             createTransaction(payedService);
         }   
-    });
-   console.log(payedService);
-   
+    });   
 };
 
 resetButton.onclick = (e) => {
     e.preventDefault();
     payments = [];
-
-    console.log(payments);
+    localStorage.clear();
 };
 
 payButton.onclick = (e) => {
     e.preventDefault();
-    pay();
+    setTimeout(pay, 1000);
+    localStorage.clear();
 };

@@ -82,3 +82,16 @@ body {
 .active {
   background-color: #dfe7f5;
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.error {
+  box-shadow: 0  0 6px rgba(255,0,0,0.5);
+  border: 1px red solid;
+  outline: 0;
+}
