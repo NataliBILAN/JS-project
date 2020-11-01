@@ -28,7 +28,6 @@ const availablePayments = {
 };
 
 const data = JSON.parse(localStorage.getItem('items'));
-console.log('initial-data', data);
 
 if(data) {
     const summary = data.map(item => {
@@ -129,10 +128,9 @@ const createTotalInfo = () => {
     let totalValue;
     
     totalValue = payments.reduce((sum,current) => {
-        return sum + current.total;}, 0);
+        return sum + Number(current.total);
+    }, 0);
     
-    console.log('totalValue', totalValue);
-
     const total = document.getElementById('total');
     total.innerHTML = `${totalValue}`;
 };
@@ -141,11 +139,11 @@ createTotalInfo();
 
 const createSavedPayments = () => {
     let currentService;
-   for(const key in availablePayments) {
+    for(const key in availablePayments) {
        if (key === payment.id) {
           currentService = availablePayments[key];
        }
-   }
+    }
  
     const paymentInfo = `<p class="right__payments-field">
     <label>
@@ -165,8 +163,7 @@ const createTransaction = (payedService) => {
 
 saveButton.onclick = (e) => {
     e.preventDefault();
-
-    if(payment.id === undefined) {
+    if(payment.id === undefined || payment.id === '') {
         allCompanies.forEach(item => {
             item.classList.add('error');
         });
@@ -211,28 +208,27 @@ saveButton.onclick = (e) => {
         total: '',
 
     };
+    resetValues();
+};
 
-    previousValue.value = '';
-    currentValue.value = '';
-    paymentValue.value = '';
-
-    meters.value = '';
-
-    allCompanies.forEach(item => {item.classList.remove('active');});
-
-    console.log('data', data);
-    console.log('payments', payments);
+const removeElementsFromDom = () => {
+    while (forPaymentList.children.length - 1) {
+        forPaymentList.removeChild(forPaymentList.firstChild);
+    };
+    paymentsList.remove();
 };
 
 const pay = () => {
     const inputs = paymentsList.querySelectorAll("input[type='checkbox']");
     let payedService;
-    console.log(inputs);
+
     inputs.forEach(input => {
         if(input.checked === true && !input.getAttribute("disabled")) {
             payedService = input.nextElementSibling.innerHTML;
             console.log(`${payedService} оплачено`);
+
             createTransaction(payedService);
+
             payments.map(i => {
                 if(i.id === input.id) {
                     i.payed = true;
@@ -242,17 +238,29 @@ const pay = () => {
         }    
     }); 
 
-    if (payments.every(item => item.payed === true)) {
+    if (payments.every(item => item.payed === true)) { 
+        removeElementsFromDom();
         localStorage.clear();
+        payments = [];
+        createTotalInfo();
     }
+};
 
-console.log(payments);
+const resetValues = () =>{
+    allCompanies.forEach(item => {item.classList.remove('active');});
+    previousValue.value = '';
+    currentValue.value = '';
+    paymentValue.value = '';
+    meters.value = '';
 };
 
 resetButton.onclick = (e) => {
     e.preventDefault();
+    resetValues();
+    removeElementsFromDom();
     payments = [];
     localStorage.clear();
+    createTotalInfo();
 };
 
 payButton.onclick = (e) => {
