@@ -15,24 +15,8 @@ const saveButton = document.getElementById('save-btn');
 const resetButton = document.getElementById('reset-btn');
 const payButton = document.getElementById('pay-btn');
 const forPaymentList = document.querySelector('.form__summary-list');
-const totalPriceInfo = document.querySelector('.total-price');
 const paymentsList = document.querySelector('.right__payments-fields');
 const transactionsList = document.querySelector('.transactions__list');
-
-const data = JSON.parse(localStorage.getItem('items'));
-console.log(data);
-
-if(data) {
-    const summary = data.map(item => {
-        return `<li class="list__item">
-        <p><span class="list__item-label">${item.meterId}</span>
-        <span class="price">$ <b>${item.total}</b></span>
-        </p>
-      </li>`;
-    });
-    
-    forPaymentList.insertAdjacentHTML('afterbegin', summary);
-}
 
 
 const availablePayments = {
@@ -43,6 +27,40 @@ const availablePayments = {
     exchange: 'Обмен валют'
 };
 
+const data = JSON.parse(localStorage.getItem('items'));
+console.log('initial-data', data);
+
+if(data) {
+    const summary = data.map(item => {
+        return `<li class="list__item">
+        <p><span class="list__item-label">${item.meterId}</span>
+        <span class="price">$ <b>${item.total}</b></span>
+        </p>
+      </li>`;
+    });
+
+    let currentService;
+     const paymentInfo = data.map(item => {
+          for(const key in availablePayments) {
+              if (key === item.id) {
+                 currentService = availablePayments[key];
+              }
+         }
+  
+         return  `<p class="right__payments-field">
+      <label>
+        <input type="checkbox" id="${item.id}" />
+        <span>${currentService}</span>
+      </label>
+    </p>`;
+      });
+  
+    paymentsList.insertAdjacentHTML("afterbegin", paymentInfo.join(''));
+    
+    forPaymentList.insertAdjacentHTML('afterbegin', summary.join(''));
+
+    payments.push(...data);
+}
 
 companies.onclick = (e) => {
     const id = e.target.getAttribute('data-id');
@@ -53,6 +71,10 @@ companies.onclick = (e) => {
         if(item.dataset.id !== id) {
             item.classList.remove('active');
         }
+    });
+
+    allCompanies.forEach(item => {
+        item.classList.remove('error');
     });
     
    payment.id = id;
@@ -84,7 +106,7 @@ paymentValue.oninput = (e) => {
 
 const getCost = () => { 
     const {current, previous, id} = payment;
-    const result = ((current*100) - (previous*100))*tarifs[`${id}`];
+    const result = (Number(current) - Number(previous))*(tarifs[id]*100);
     const paymentTotal = result/100;
     payment.total = paymentTotal;
 };
@@ -98,51 +120,36 @@ const createForPaymentInfo = () => {
                   </li>`;
      
 
-forPaymentList.insertAdjacentHTML('afterbegin', item);
+    forPaymentList.insertAdjacentHTML('afterbegin', item);
+
+    payment.payed = false;
 };
 
 const createTotalInfo = () => {
-    const newTotalEl = document.createElement('span');
-    newTotalEl.setAttribute("id", "new-total");
     let totalValue;
-    if(data) {
-        totalValue = data.reduce((sum,current) => {
-            return sum + current.total;}, 0);
-    }
+    
+    totalValue = payments.reduce((sum,current) => {
+        return sum + current.total;}, 0);
     
     console.log('totalValue', totalValue);
-    newTotalEl.innerHTML = `${totalValue}`;
 
-    const newTotal = document.getElementById('new-total');
     const total = document.getElementById('total');
-    //total.innerHTML = `${payment.total}`;
-
-    
-    if(data && total) {
-        totalPriceInfo.replaceChild(newTotalEl, total);
-    }
-  
-    if(total) {
-        total.innerHTML = `${payment.total}`;        
-    } 
-
-    if(newTotal) {
-        newTotal.innerHTML = `${newTotalValue}`;
-    }
+    total.innerHTML = `${totalValue}`;
 };
+
+createTotalInfo();
 
 const createSavedPayments = () => {
     let currentService;
-    for(const key in availablePayments) {
-        if (key == payment.id) {
-            currentService = availablePayments[key];
-        }
-    }
-    console.log('currentService',currentService);
+   for(const key in availablePayments) {
+       if (key === payment.id) {
+          currentService = availablePayments[key];
+       }
+   }
  
     const paymentInfo = `<p class="right__payments-field">
     <label>
-      <input type="checkbox" />
+      <input type="checkbox" id="${payment.id}" />
       <span>${currentService}</span>
     </label>
   </p>`;
@@ -158,19 +165,41 @@ const createTransaction = (payedService) => {
 
 saveButton.onclick = (e) => {
     e.preventDefault();
+
+    if(payment.id === undefined) {
+        allCompanies.forEach(item => {
+            item.classList.add('error');
+        });
+        return false;
+    }
     
     if(meters.value === '') {
         meters.classList.add('error');
         return false;
     }
-    meters.classList.remove('error');    
+    meters.classList.remove('error'); 
     
+    if(previousValue.value === '') {
+        previousValue.classList.add('error');
+        return false;
+    }
+    previousValue.classList.remove('error');
+
+    if(currentValue.value === ''){
+        currentValue.classList.add('error');
+        return false;
+    }
+    currentValue.classList.remove('error');
+
+    payment.payed = false;
+
+    payments.push(payment);
+
     createForPaymentInfo();
     createTotalInfo();
-    createSavedPayments();
+    createSavedPayments();    
 
     //LocalStorage
-    payments.push(payment);
     localStorage.setItem('items', JSON.stringify(payments));    
     
     payment = {
@@ -180,6 +209,7 @@ saveButton.onclick = (e) => {
         previous: '',
         currentOnDate: '',
         total: '',
+
     };
 
     previousValue.value = '';
@@ -187,7 +217,6 @@ saveButton.onclick = (e) => {
     paymentValue.value = '';
 
     meters.value = '';
-    console.log(meters.value);
 
     allCompanies.forEach(item => {item.classList.remove('active');});
 
@@ -198,13 +227,26 @@ saveButton.onclick = (e) => {
 const pay = () => {
     const inputs = paymentsList.querySelectorAll("input[type='checkbox']");
     let payedService;
-    inputs.forEach(item => {
-        if(item.checked === true) {
-            payedService = item.nextElementSibling.innerHTML;
+    console.log(inputs);
+    inputs.forEach(input => {
+        if(input.checked === true && !input.getAttribute("disabled")) {
+            payedService = input.nextElementSibling.innerHTML;
             console.log(`${payedService} оплачено`);
             createTransaction(payedService);
-        }   
-    });   
+            payments.map(i => {
+                if(i.id === input.id) {
+                    i.payed = true;
+                }
+            });
+            input.setAttribute("disabled", "true");
+        }    
+    }); 
+
+    if (payments.every(item => item.payed === true)) {
+        localStorage.clear();
+    }
+
+console.log(payments);
 };
 
 resetButton.onclick = (e) => {
@@ -216,5 +258,4 @@ resetButton.onclick = (e) => {
 payButton.onclick = (e) => {
     e.preventDefault();
     setTimeout(pay, 1000);
-    localStorage.clear();
 };

@@ -68,6 +68,16 @@
           }
         }
       }
+
+      input:disabled + {
+        span {
+          &:before {
+            background-image: url("../../public/img/posotove-answer.svg");
+            border: none;
+          }
+        }
+      }
+      
     }
   }
 
