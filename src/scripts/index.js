@@ -1,5 +1,4 @@
 import '../styles/index.scss';
-
 import { tarifs } from './constants';
 
 let payment = {};
@@ -39,19 +38,19 @@ if(data) {
     });
 
     let currentService;
-     const paymentInfo = data.map(item => {
-          for(const key in availablePayments) {
-              if (key === item.id) {
-                 currentService = availablePayments[key];
-              }
-         }
-  
-         return  `<p class="right__payments-field">
-      <label>
-        <input type="checkbox" id="${item.id}" />
-        <span>${currentService}</span>
-      </label>
-    </p>`;
+    const paymentInfo = data.map(item => {
+        for(const key in availablePayments) {
+            if (key === item.id) {
+                currentService = availablePayments[key];
+            }
+        }
+
+        return  `<p class="right__payments-field">
+                <label>
+                    <input type="checkbox" id="${item.id}" />
+                    <span>${currentService}</span>
+                </label>
+                </p>`;
       });
   
     paymentsList.insertAdjacentHTML("afterbegin", paymentInfo.join(''));
@@ -81,43 +80,39 @@ companies.onclick = (e) => {
 
 meters.onchange = (e) => {
     const value = e.target.value;
-
     payment.meterId = value;
 };
 
 previousValue.oninput = (e) => {
     const value = e.target.value;
     payment.previous = value;
-
 };
 
 currentValue.oninput = (e) => {
     const value = e.target.value;
     payment.current = value;
-
 };
 
 paymentValue.oninput = (e) => {
     const value = e.target.value;
     payment.currentOnDate = value;
-
 };
 
 const getCost = () => { 
     const {current, previous, id} = payment;
     const result = (Number(current) - Number(previous))*(tarifs[id]*100);
     const paymentTotal = result/100;
+
     payment.total = paymentTotal;
 };
 
 const createForPaymentInfo = () => {
     getCost();
     const item = `<li class="list__item">
-                   <p><span class="list__item-label">${payment.meterId}</span>
-                   <span class="price">$ <b>${payment.total}</b></span>
-                   </p>
-                  </li>`;
-     
+                    <p><span class="list__item-label">${payment.meterId}</span>
+                    <span class="price">$ <b>${payment.total}</b></span>
+                    </p>
+                  </li>`;     
 
     forPaymentList.insertAdjacentHTML('afterbegin', item);
 
@@ -143,7 +138,7 @@ const createSavedPayments = () => {
        if (key === payment.id) {
           currentService = availablePayments[key];
        }
-    }
+    };
  
     const paymentInfo = `<p class="right__payments-field">
     <label>
@@ -174,18 +169,21 @@ saveButton.onclick = (e) => {
         meters.classList.add('error');
         return false;
     }
+
     meters.classList.remove('error'); 
     
     if(previousValue.value === '') {
         previousValue.classList.add('error');
         return false;
     }
+
     previousValue.classList.remove('error');
 
     if(currentValue.value === ''){
         currentValue.classList.add('error');
         return false;
     }
+
     currentValue.classList.remove('error');
 
     payment.payed = false;
@@ -215,6 +213,7 @@ const removeElementsFromDom = () => {
     while (forPaymentList.children.length - 1) {
         forPaymentList.removeChild(forPaymentList.firstChild);
     };
+
     paymentsList.remove();
 };
 
@@ -247,7 +246,10 @@ const pay = () => {
 };
 
 const resetValues = () =>{
-    allCompanies.forEach(item => {item.classList.remove('active');});
+    allCompanies.forEach(item => {
+        item.classList.remove('active');
+    });
+    
     previousValue.value = '';
     currentValue.value = '';
     paymentValue.value = '';
